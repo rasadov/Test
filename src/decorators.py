@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request, jsonify
+from flask import jsonify
 from flask_login import current_user
 
 def login_required(f):
