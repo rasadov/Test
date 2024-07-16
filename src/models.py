@@ -32,8 +32,7 @@ class User(UserMixin, db.Model):
     
     @staticmethod
     def user_exists(username):
-        return db.Query(User).filter(User.username==username).count() > 0
-
+        return db.session.query(User).filter(User.username == username).count() > 0
 
 class ECart(db.Model):
     __tablename__ = 'ecarts'
