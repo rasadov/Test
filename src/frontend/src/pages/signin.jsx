@@ -2,9 +2,13 @@ import React from 'react';
 import { LoginForm } from '../components/forms.jsx';
 
 function Login() {
+    document.title = 'Login';
+
     return (
         <>
-        <h1>Login</h1>
+        <div style={{textAlign: "center"}}>
+            <h1>Login</h1>
+        </div>
         <LoginForm />
         </>
     );

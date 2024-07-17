@@ -15,6 +15,7 @@ function Logout() {
             console.log(data.error);
             } else {
             window.location.href = "/login";
+            window.location.replace("/login");
             }
         });
     }, []);

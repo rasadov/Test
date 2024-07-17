@@ -12,6 +12,12 @@ from utils import encode, decode
 
 main = Blueprint('main', __name__)
 
+@main.get("/credentials")
+def credentials():
+    if current_user.is_authenticated:
+        return jsonify({"is_authenticated": True, "user": current_user.to_dict()}), 200
+    return jsonify({"is_authenticated": False} ), 200
+
 @main.post("/login")
 @logout_required
 def login_post():
@@ -107,21 +113,25 @@ def admin_give_bonus(username):
 @main.get("/admin/users")
 @admin_required
 def users():
-    users = db.Query(User).all()
-    return jsonify({"users": [user.to_dict() for user in users]}), 200
+    query = db.session.query(User)
+    total = query.count()
+    users = query.paginate(per_page=10, page=1).items
+    return jsonify({"users": [user.to_dict() for user in users],
+                    "total": total}), 200
 
-@main.get("/admin/users/edit/<int:user_id>")
+
+@main.get("/admin/users/<username>")
 @admin_required
-def edit_get(user_id):
-    user = db.session.query(User).get(user_id)
+def edit_get(username):
+    user = db.session.query(User).filter(User.username==username).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
-    return jsonify({"user": user.to_dict()}), 200
+    return jsonify(user.to_dict()), 200
 
-@main.post("/admin/users/edit/<int:user_id>")
+@main.put("/admin/users/<username>")
 @admin_required
-def edit_post(user_id):
-    user = db.session.query(User).get(user_id)
+def edit_post(username):
+    user = db.session.query(User).filter(User.username==username).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
     data = request.form
@@ -131,13 +141,16 @@ def edit_post(user_id):
     user.phone = data.get("phone")
     user.role = data.get("role")
     db.session.commit()
-    return jsonify({"user": user.to_dict()}), 200
+    return jsonify(user.to_dict()), 200
 
-@main.post("/admin/users/delete/<int:user_id>")
-def delete(user_id):
-    user = db.session.query(User).get(user_id)
+@main.delete("/admin/users/<username>")
+def delete(username):
+    user = db.session.query(User).filter(User.username==username).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
+    if user.username == current_user.username:
+        return jsonify({"error": "You can't delete yourself"}), 400
+    db.session.delete(user.ecart)
     db.session.delete(user)
     db.session.commit()
     return jsonify({"message": "User deleted"}), 200

@@ -20,16 +20,10 @@ export default function Home() {
                 <img src="src/assets/images/main.png" alt="background image" style={backgroundStyle} />
                 <div className="header-div" style={{ position: 'relative', zIndex: 1 }}> {/* Ensures content is above the background */}
                     <div >
-                        <h1 className="header-h1">ПРЕВРАТИТЕ</h1>
-                        <h1 className="header-h1">УЕЗДНОЙ ГОРОД</h1>
-                        <h1 className="header-h1" style={{marginLeft: "70px"}}>В СТОЛИЦУ</h1>
-                        <h1 className="header-h1" style={{marginLeft: "30px"}}>ЗЕМНОГО ШАРА!</h1>
-                    </div>
-                    <div>
-                    <p>
-                        Оплатите взнос на телеграммы для организации
-                        Международного васюкинского турнира по шахматам
-                     </p>
+                        <h1 className="header-h1">ECART</h1>
+                        <h1 className="header-h1">Save</h1>
+                        <h1 className="header-h1" >your money</h1>
+                        <h1 className="header-h1" >and time</h1>
                     </div>
                 </div>
             </div>

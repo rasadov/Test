@@ -7,27 +7,45 @@ function RegisterForm() {
 
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="username">Username</label>
-            <input type="text" id="username" name="username" className="form-control"/>
-            
-            <label htmlFor="name">Name</label>
-            <input type="text" id="name" name="name" className="form-control"/>
+<div className="d-flex justify-content-center align-items-center">
+  <div className="card my-5" style={{ width: "30rem" }}>
+    <div className="card-body">
+      <form onSubmit={handleSubmit} className="p-3">
+        <div className="form-group mb-3">
+          <label htmlFor="username">Username</label>
+          <input type="text" id="username" name="username" className="form-control"/>
+        </div>
+        
+        <div className="form-group mb-3">
+          <label htmlFor="name">Name</label>
+          <input type="text" id="name" name="name" className="form-control"/>
+        </div>
 
-            <label htmlFor="surname">Surname</label>
-            <input type="text" id="surname" name="surname" className="form-control"/>
+        <div className="form-group mb-3">
+          <label htmlFor="surname">Surname</label>
+          <input type="text" id="surname" name="surname" className="form-control"/>
+        </div>
 
-            <label htmlFor="phone">Phone number</label>
-            <input type="text" id="phone" name="phone" className="form-control"/>
+        <div className="form-group mb-3">
+          <label htmlFor="phone">Phone number</label>
+          <input type="text" id="phone" name="phone" className="form-control"/>
+        </div>
 
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password" className="form-control"/>
+        <div className="form-group mb-3">
+          <label htmlFor="password">Password</label>
+          <input type="password" id="password" name="password" className="form-control"/>
+        </div>
 
-            <label htmlFor="confirm">Confirm password</label>
-            <input type="password" id="confirm" name="confirm" className="form-control"/>
+        <div className="form-group mb-3">
+          <label htmlFor="confirm">Confirm password</label>
+          <input type="password" id="confirm" name="confirm" className="form-control"/>
+        </div>
 
-            <button type="submit">Register</button>
-        </form>
+        <button type="submit" className="btn btn-primary mt-4" style={{width: "100%"}}>Register</button>
+      </form>
+    </div>
+  </div>
+</div>
     );
 }
 
@@ -101,15 +119,25 @@ function LoginForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="username">Username</label>
-            <input type="text" id="username" name="username" className="form-control"/>
-            
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password" className="form-control"/>
+        <div className="d-flex justify-content-center align-items-center" >
+        <div className="card my-5" style={{ width: "30rem", textAlign: "center" }}>
+            <div className="card-body">
+            <form onSubmit={handleSubmit} className="p-3">
+                <div className="form-group mb-3">
+                <label htmlFor="username">Username</label>
+                <input type="text" id="username" name="username" className="form-control"/>
+                </div>
+                
+                <div className="form-group mb-3">
+                <label htmlFor="password">Password</label>
+                <input type="password" id="password" name="password" className="form-control"/>
+                </div>
 
-            <button type="submit">Login</button>
-        </form>
+                <button type="submit" className="btn btn-primary mt-4" style={{width: "100%"}}>Login</button>
+            </form>
+            </div>
+        </div>
+        </div>
     );
 }
 
