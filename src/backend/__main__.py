@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append('src')
+sys.path.append('backend')
 
 from config import app
 from routes import main
