@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, current_user
-from flask_cors import cross_origin, CORS
 
 from models import User, ECart
 from db import db
@@ -12,9 +11,6 @@ from decorators import login_required, logout_required, admin_required
 from utils import encode, decode
 
 main = Blueprint('main', __name__)
-
-
-CORS(main, supports_credentials=True)
 
 @main.post("/login")
 @logout_required
@@ -66,9 +62,15 @@ def logout():
     logout_user()
     return jsonify({"message": "Logged out"}), 200
 
+@main.get("/admin/scan")
+@admin_required
+def scan_get():
+    return jsonify({"message": "Scan QR code"}), 200
+
 @main.post("/admin/scan")
 @admin_required
 def scan_post():
+    print(request.files)
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
@@ -84,6 +86,14 @@ def scan_post():
             return jsonify({"error": "QR code not found"}), 404
     return jsonify({"error": "Something went wrong"}), 500
 
+@main.get("/admin/scan/<string:username>")
+@admin_required
+def admin_scan_user(username):
+    user = db.session.query(User).filter(User.username==username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"user": user.to_dict(), "ecart": user.ecart.to_dict()}), 200
+
 @main.post("/admin/scan/<string:username>")
 @admin_required
 def admin_give_bonus(username):
@@ -92,24 +102,13 @@ def admin_give_bonus(username):
         return jsonify({"error": "User not found"}), 404
     user.ecart.bonus += 1
     db.session.commit()
-    return jsonify({"message": "Bonus given"}), 200
+    return jsonify({"user": user.to_dict(), "ecart": user.ecart.to_dict()}), 200
 
 @main.get("/admin/users")
 @admin_required
 def users():
     users = db.Query(User).all()
     return jsonify({"users": [user.to_dict() for user in users]}), 200
-
-@main.get("/admin/users/<int:user_id>")
-@admin_required
-def user_details(user_id):
-    print(current_user.role)
-    user = db.session.query(User).get(user_id)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-    return jsonify({
-        "user": user.to_dict(),
-        "ecart": user.ecart.to_dict()}), 200
 
 @main.get("/admin/users/edit/<int:user_id>")
 @admin_required

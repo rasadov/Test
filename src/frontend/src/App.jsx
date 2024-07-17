@@ -5,7 +5,7 @@ import Home from './pages/home.jsx';
 import Login from './pages/signin.jsx';
 import Register from './pages/singup.jsx';
 import Profile from './pages/profile.jsx';
-import {Admin, AdminScan} from './pages/admin.jsx';
+import {Admin, AdminScan, AdminScanUser} from './pages/admin.jsx';
 import NotFound from './pages/notFound.jsx';
 import Logout from './pages/logout.jsx';
 
@@ -20,7 +20,8 @@ function App() {
           <Route exact path='/logout' element={<Logout/>} />
           <Route exact path='/profile' element={<Profile/>} />
           <Route exact path='/admin' element={<Admin/>} />
-          <Route exact path='/admin/scan/:username' element={<AdminScan/>} />
+          <Route exact path='/admin/scan' element={<AdminScan/>} />
+          <Route exact path='/admin/scan/:username' element={<AdminScanUser/>} />
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </div>
