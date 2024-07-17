@@ -2,7 +2,7 @@ from os import environ as env
 
 import cv2
 import numpy as np
-from flask import Blueprint, render_template, redirect, request
+from flask import Blueprint, render_template, redirect, request, jsonify
 from flask_login import login_user, logout_user, current_user
 
 
@@ -31,14 +31,14 @@ def login_post():
     user = db.session.query(User).filter(User.username==username)
 
     if user.count() == 0:
-        return "User not found"
+        return jsonify({"error": "User not found"}), 404
     user = user.first()
 
     if not user.check_password(password_attempt):
-        return "Wrong password or username"
+        return jsonify({"error": "Wrong password"}), 400
     
     login_user(user)
-    return redirect('/')
+    return jsonify({"user": user.to_dict()}), 200
     
 
 @main.get("/register")
@@ -52,7 +52,7 @@ def register_post():
     data = request.form
     
     if User.user_exists(data.get("username")):
-        return "User already exists"
+        return jsonify({"error": "User already exists"}), 400
     
     user = User(data)
     ecart = ECart(user_id=user.id)
@@ -61,7 +61,7 @@ def register_post():
     db.session.add(ecart)
     db.session.commit()
     login_user(user)
-    return redirect('/')
+    return jsonify({"user": user.to_dict()}), 200
 
 @main.get("/profile")
 @login_required
@@ -75,7 +75,7 @@ def profile():
 @login_required
 def logout():
     logout_user()
-    return redirect('/')
+    return jsonify({"message": "Logged out"}), 200
 
 @main.get("/admin")
 @admin_required
@@ -91,67 +91,66 @@ def scan():
 @admin_required
 def scan_post():
     if 'file' not in request.files:
-        return "No file part", 400
+        return jsonify({"error": "No file part"}), 400
     file = request.files['file']
     if file.filename == '':
-        return "No selected file", 400
+        return jsonify({"error": "No selected file"}), 400
     if file:
         image = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
         
         decoded_str = decode(image)
         if decoded_str:
-            print(decoded_str)
-            return redirect(decoded_str)
+            return jsonify({"decoded_str": decoded_str}), 200
         else:
-            return "No QR code found", 400
-    return "An error occurred", 500
+            return jsonify({"error": "QR code not found"}), 404
+    return jsonify({"error": "Something went wrong"}), 500
 
 @main.get("/admin/scan/<string:username>")
 @admin_required
 def admin_user_details(username):
     user = db.session.query(User).filter(User.username==username).first()
     if not user:
-        return "User not found", 404
-    return render_template("detail.html", user=user)
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"user": user.to_dict()}), 200
 
 @main.post("/admin/scan/<string:username>")
 @admin_required
 def admin_give_bonus(username):
     user = db.session.query(User).filter(User.username==username).first()
     if not user:
-        return "User not found", 404
+        return jsonify({"error": "User not found"}), 404
     user.ecart.bonus += 1
     db.session.commit()
-    return redirect(f"/admin/scan/{username}")
+    return jsonify({"message": "Bonus given"}), 200
 
 @main.get("/admin/users")
 @admin_required
 def users():
     users = db.Query(User).all()
-    return render_template("users.html", users=users)
+    return jsonify({"users": [user.to_dict() for user in users]}), 200
 
 @main.get("/admin/users/<int:user_id>")
 @admin_required
 def user_details(user_id):
     user = db.session.query(User).get(user_id)
     if not user:
-        return "User not found", 404
-    return render_template("detail.html", user=user)
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"user": user.to_dict()}), 200
 
 @main.get("/admin/users/edit/<int:user_id>")
 @admin_required
 def edit_get(user_id):
     user = db.session.query(User).get(user_id)
     if not user:
-        return "User not found", 404
-    return render_template("edit.html", user=user)
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"user": user.to_dict()}), 200
 
 @main.post("/admin/users/edit/<int:user_id>")
 @admin_required
 def edit_post(user_id):
     user = db.session.query(User).get(user_id)
     if not user:
-        return "User not found", 404
+        return jsonify({"error": "User not found"}), 404
     data = request.form
     user.username = data.get("username")
     user.name = data.get("name")
@@ -159,13 +158,13 @@ def edit_post(user_id):
     user.phone = data.get("phone")
     user.role = data.get("role")
     db.session.commit()
-    return redirect(f"/admin/users/{user_id}")
+    return jsonify({"user": user.to_dict()}), 200
 
 @main.post("/admin/users/delete/<int:user_id>")
 def delete(user_id):
     user = db.session.query(User).get(user_id)
     if not user:
-        return "User not found", 404
+        return jsonify({"error": "User not found"}), 404
     db.session.delete(user)
     db.session.commit()
-    return redirect("/admin/users")
+    return jsonify({"message": "User deleted"}), 200
