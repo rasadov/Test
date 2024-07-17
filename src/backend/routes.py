@@ -2,9 +2,9 @@ from os import environ as env
 
 import cv2
 import numpy as np
-from flask import Blueprint, render_template, redirect, request, jsonify
+from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, current_user
-
+from flask_cors import cross_origin, CORS
 
 from models import User, ECart
 from db import db
@@ -13,20 +13,15 @@ from utils import encode, decode
 
 main = Blueprint('main', __name__)
 
-@main.get("/")
-def index():
-    return render_template('index.html')
 
-@main.get("/login")
-@logout_required
-def login():
-    return render_template('login.html')
+CORS(main, supports_credentials=True)
 
 @main.post("/login")
 @logout_required
 def login_post():
-    username = request.form.get("username")
-    password_attempt = request.form.get("password")
+    data = request.get_json()
+    username = data.get("username")
+    password_attempt = data.get("password")
 
     user = db.session.query(User).filter(User.username==username)
 
@@ -39,18 +34,12 @@ def login_post():
     
     login_user(user)
     return jsonify({"user": user.to_dict()}), 200
-    
-
-@main.get("/register")
-@logout_required
-def register():
-    return render_template('register.html')
 
 @main.post("/register")
 @logout_required
 def register_post():
-    data = request.form
-    
+    data = request.get_json()
+    print(data)
     if User.user_exists(data.get("username")):
         return jsonify({"error": "User already exists"}), 400
     
@@ -66,26 +55,16 @@ def register_post():
 @main.get("/profile")
 @login_required
 def profile():
-    return render_template('profile.html',
-                           qr_code=encode(f"{env.get('MY_URL')}/admin/scan/{current_user.username}"),
-                           user=current_user,
-                           ecart=current_user.ecart)
+    return jsonify({"user": current_user.to_dict(), 
+                    "ecart": current_user.ecart.to_dict(),
+                    "qr_code": encode(f"{env.get('MY_URL')}/admin/scan/{current_user.username}")
+                    }), 200
 
 @main.get("/logout")
 @login_required
 def logout():
     logout_user()
     return jsonify({"message": "Logged out"}), 200
-
-@main.get("/admin")
-@admin_required
-def admin():
-    return render_template("admin.html", qr_code=encode("https://www.google.com"))
-
-@main.get("/admin/scan")
-@admin_required
-def scan():
-    return render_template("admin_scan.html")
 
 @main.post("/admin/scan")
 @admin_required
@@ -104,14 +83,6 @@ def scan_post():
         else:
             return jsonify({"error": "QR code not found"}), 404
     return jsonify({"error": "Something went wrong"}), 500
-
-@main.get("/admin/scan/<string:username>")
-@admin_required
-def admin_user_details(username):
-    user = db.session.query(User).filter(User.username==username).first()
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-    return jsonify({"user": user.to_dict()}), 200
 
 @main.post("/admin/scan/<string:username>")
 @admin_required
@@ -132,10 +103,13 @@ def users():
 @main.get("/admin/users/<int:user_id>")
 @admin_required
 def user_details(user_id):
+    print(current_user.role)
     user = db.session.query(User).get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
-    return jsonify({"user": user.to_dict()}), 200
+    return jsonify({
+        "user": user.to_dict(),
+        "ecart": user.ecart.to_dict()}), 200
 
 @main.get("/admin/users/edit/<int:user_id>")
 @admin_required

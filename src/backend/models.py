@@ -30,6 +30,16 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.role == 'admin'
     
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "name": self.name,
+            "surname": self.surname,
+            "phone": self.phone,
+            "role": self.role
+        }
+    
     @staticmethod
     def user_exists(username):
         return db.session.query(User).filter(User.username == username).count() > 0
@@ -39,6 +49,13 @@ class ECart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     bonus = db.Column(db.Integer, nullable=False, default=5)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "bonus": self.bonus
+        }
 
 @login_manager.user_loader
 def load_user(user_id):
