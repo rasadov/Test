@@ -94,7 +94,7 @@ function sendRegisterForm() {
     };
 
     console.log(data);
-    fetch('http://localhost:5000/register', {
+    fetch('https://api.abyssara.tech/register', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -163,7 +163,7 @@ function sendLoginForm() {
         password: document.getElementById('password').value,
     };
 
-    fetch('http://localhost:5000/login', {
+    fetch('https://api.abyssara.tech/login', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {

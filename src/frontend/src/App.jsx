@@ -10,61 +10,61 @@ import NotFound from './pages/notFound.jsx';
 import Logout from './pages/logout.jsx';
 
 function App() {
-    const checkLoginStatus = async () => {
-      try {
-          const response = await fetch('http://localhost:5000/credentials', {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              credentials: 'include',
+  console.log('App.jsx is running');
+  const checkLoginStatus = async () => {
+    try {
+      console.log('Checking login status');
+      const response = await fetch('https://api.abyssara.tech/credentials', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+      });
+      console.log('Response', response);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('User is logged in', data);
+        if (data.is_authenticated) {
+          document.cookie = `username=${data.user.username}`;
+          document.getElementById('nav-link-list').innerHTML = `
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>`;
+          if (data.user.role === 'admin') {
+            document.getElementById('nav-link-list').innerHTML += `<li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>`;
           }
-          );
-          if (response.ok) {
-              const data = await response.json();
-              console.log('User is logged in', data);
-              if (data.is_authenticated) {
-
-                document.cookie = `username=${data.user.username}`;
-                document.getElementById('nav-link-list').innerHTML = `
-                <li class="nav-item">
-                <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>`;
-                if (data.user.role === 'admin') {
-                  document.getElementById('nav-link-list').innerHTML += `<li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>`;
-                }
-              } else {
-                document.getElementById('nav-link-list').innerHTML = `
-                <li class="nav-item active">
-                  <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/login">Login</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/register">Register</a>
-                </li>
-                `;
-              }
-          } else {
-              console.log('User is not logged in');
-
-          }
-      } catch (error) {
-          console.error('Failed to check login status', error);
+        } else {
+          document.getElementById('nav-link-list').innerHTML = `
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+            `;
+        }
+      } else {
+        console.log('User is not logged in');
       }
+    } catch (error) {
+      console.error('Failed to check login status', error);
+    }
   };
-
+  
   const usernameCookie = document.cookie.split(';').map(cookie => cookie.trim().split('=')).find(cookie => cookie[0] === 'username');
   const isLoggedIn = usernameCookie !== undefined;
-
-
+  
+  console.log('isLoggedIn', isLoggedIn);
+  
   useEffect(() => {
-    if (isLoggedIn) {
-    checkLoginStatus();
-  }
-}, []);
+      checkLoginStatus();
+  }, []);
+
   return (
     <Router>
       <div>

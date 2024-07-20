@@ -21,7 +21,7 @@ def logout_required(f):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.is_authenticated and current_user.is_admin:
+        if current_user.is_authenticated and current_user.role == 'admin':
             return f(*args, **kwargs)
         return jsonify({'message': 'Admin required'}), 401
     return decorated_function

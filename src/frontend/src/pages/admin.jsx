@@ -35,7 +35,7 @@ function AdminScanUser() {
     const [response, setResponse] = useState({});
 
     useEffect(() => {
-        fetch('http://localhost:5000/admin/scan/' + username, {
+        fetch('https://api.abyssara.tech/admin/scan/' + username, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -70,7 +70,7 @@ function AdminScanUser() {
 function giftBonus(username) {
     console.log('Gift bonus');
 
-    fetch('http://localhost:5000/admin/scan/'+username, {
+    fetch('https://api.abyssara.tech/admin/scan/'+username, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -132,7 +132,7 @@ function sendPhoto() {
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
 
-        fetch('http://localhost:5000/admin/scan', {
+        fetch('https://api.abyssara.tech/admin/scan', {
             method: 'POST',
             body: formData,
             credentials: 'include'
@@ -156,7 +156,7 @@ function AdminUsers() {
     const [totalUsers, setTotalUsers] = useState(0);
 
     useEffect(() => {
-        fetch('http://localhost:5000/admin/users', {
+        fetch('https://api.abyssara.tech/admin/users', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -242,7 +242,7 @@ function AdminUserDelete() {
 }
 
 function deleteUser(username) {
-    fetch('http://localhost:5000/admin/users/' + username, {
+    fetch('https://api.abyssara.tech/admin/users/' + username, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
@@ -273,7 +273,7 @@ function AdminUserEdit() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        fetch(`http://localhost:5000/admin/users/${username}`, {
+        fetch(`https://api.abyssara.tech/admin/users/${username}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
@@ -314,7 +314,7 @@ function AdminUserEdit() {
     const sendUserEditForm = (e) => {
         e.preventDefault();
         
-        fetch(`http://localhost:5000/admin/users/${username}`, {
+        fetch(`https://api.abyssara.tech/admin/users/${username}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -361,7 +361,7 @@ function sendUserEditForm() {
     const username = document.getElementById('username').value;
     const phone = document.getElementById('phone').value;
 
-    fetch('http://localhost:5000/admin/users/' + username, {
+    fetch('https://api.abyssara.tech/admin/users/' + username, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'

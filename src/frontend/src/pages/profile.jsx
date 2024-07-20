@@ -8,7 +8,7 @@ function Profile() {
   const [ecart, setEcart] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/profile', {
+    fetch('https://api.abyssara.tech/profile', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'

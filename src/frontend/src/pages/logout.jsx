@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 function Logout() {
     useEffect(() => {
-        fetch("http://localhost:5000/logout", {
+        fetch("https://api.abyssara.tech/logout", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

@@ -144,6 +144,7 @@ def edit_post(username):
     return jsonify(user.to_dict()), 200
 
 @main.delete("/admin/users/<username>")
+@admin_required
 def delete(username):
     user = db.session.query(User).filter(User.username==username).first()
     if not user:
